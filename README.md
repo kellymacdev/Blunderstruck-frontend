@@ -91,7 +91,7 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:8000",
 
 ### Backend (Render)
 1. Push Django project to separate GitHub repo.
-2. Create new Web Service on [Render][https://render.com/]
+2. Create new Web Service on [Render](https://render.com/).
 3. Set environment variables:
    ```env
    DJANGO_SECRET_KEY = <your_secret_key>
@@ -134,5 +134,6 @@ GET /api/month/?username=kris_lemon&month=10&year=2025
 - Add caching layer for faster responses
 - Include bullet/blitz filters
 
-
+## License
+This project is licensed under the [MIT License](./LICENSE). 
 
