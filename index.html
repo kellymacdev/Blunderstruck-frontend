@@ -1,0 +1,64 @@
+{% extends './layout.html' %}
+{% load static %}
+
+
+{% block body %}
+<h1>BlunderStruck</h1>
+
+ <div id="search-container">
+    <input id="usernameInput" type="text" placeholder="Enter Chess.com username" />
+    <button id="search-button">Search</button>
+  </div>
+
+  <div id="message">Please enter a username</div>
+
+<div id="no-user-message" style="display:none;">No such user exists!</div>
+
+<div id="controls" class="mb-4 hidden-on-load" style="display:none;">
+  <label for="yearSelect">Year:</label>
+  <select id="yearSelect"></select>
+
+  <label for="monthSelect">Month:</label>
+  <select id="monthSelect"></select>
+    <br>
+  <button id="loadButton">Load</button>
+</div>
+
+<div id="loading" style="display:none; text-align:center; margin-top:2rem;" class="hidden-on-load">
+  <p>Loading data… ⏳</p>
+</div>
+
+    <div id="stats" style="display:none;" class="hidden-on-load">
+  <p id="games-played"></p>
+  <p id="wins-losses"></p>
+  <p id="win-rate"></p>
+  <p id="elo-change"></p>
+</div>
+
+
+    <div id="graphs-container" class="graph-container hidden-on-load" style="display:none;">
+<div class="rating-chart-container">
+<canvas id="ratingChart"></canvas>
+</div>
+
+
+<div class="openings-chart-container">
+<canvas id="openingsChart"></canvas>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
