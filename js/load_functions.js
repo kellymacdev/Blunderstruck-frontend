@@ -34,7 +34,7 @@ export function calculateStats(games) {
     } else if (game.kris_result === "insufficient") {
       draws++;
     }
-    else {
+    else if (game.opp_result === "win") {
         losses++;
         if (game.kris_result === "resigned") resigned++;
         if (game.kris_result === "checkmated") checkmated++;
