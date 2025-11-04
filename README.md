@@ -6,6 +6,8 @@ Enter any username to see rating trends, opening stats, and game results — all
 🔗 **Live App:** [kellymacdev.github.io/blunderstruck](https://kellymacdev.github.io/blunderstruck)  
 🖥️ **Backend API:** [blunderstruck.onrender.com](https://blunderstruck.onrender.com)
 
+<img width="2824" height="1526" alt="image" src="https://github.com/user-attachments/assets/a53651d9-a6e8-474c-b42e-bd063d5243c1" />
+
 ---
 
 ## Features
