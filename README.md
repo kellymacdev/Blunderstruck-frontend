@@ -8,7 +8,7 @@ Enter any username to see rating trends, opening stats, and game results — all
 
 ---
 
-## 🚀 Features
+## Features
 
 - Fetches and analyzes real Chess.com player data
 - Displays rating evolution and opening frequency
@@ -19,7 +19,7 @@ Enter any username to see rating trends, opening stats, and game results — all
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 1. The **frontend** (HTML + JS) is served from GitHub Pages.  
 2. When a user enters a Chess.com username, the app sends a request to the Django backend on Render.  
@@ -33,7 +33,7 @@ Enter any username to see rating trends, opening stats, and game results — all
 
 ---
 
-## 🧩 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-------------|
@@ -44,7 +44,7 @@ Enter any username to see rating trends, opening stats, and game results — all
 
 ---
 
-## ⚙️ Local Setup (for development)
+## Local Setup (for development)
 
 ### 1. Clone repo
 
@@ -79,7 +79,7 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:8000",
     "http://127.0.0.1:5500",  # for local frontend testing
 ]
 ```
-## 🌍 Deployment 
+## Deployment 
 
 ### Frontend (GitHub Pages)
 1. Commit HTML, CSS and JS files to main branch.
