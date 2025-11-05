@@ -4,7 +4,7 @@ import { Chess } from "chess.js";
 async function countBlunders(pgn, playerColor) {
   const sf = new Worker("./stockfish.js");
   const chess = new Chess();
-  chess.loadPgn(pgn);
+  chess.loadPgn(pgn, { strict: false });
 
   let blunders = 0;
   const moves = chess.history();
