@@ -2,7 +2,7 @@ import { Chess } from "chess.js";
 
 
 async function countBlunders(pgn, playerColor) {
-  const sf = new Worker("https://cdn.jsdelivr.net/npm/stockfish@latest/stockfish.js");
+  const sf = new Worker("./stockfish.js");
   const chess = new Chess();
   chess.loadPgn(pgn);
 
