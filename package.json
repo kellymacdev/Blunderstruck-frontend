@@ -1,0 +1,25 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kellymacdev/Blunderstruck-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kellymacdev/Blunderstruck-frontend/issues"
+  },
+  "homepage": "https://github.com/kellymacdev/Blunderstruck-frontend#readme",
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "stockfish.wasm": "^0.10.0"
+  }
+}

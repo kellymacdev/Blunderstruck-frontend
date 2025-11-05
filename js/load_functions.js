@@ -1,3 +1,65 @@
+import { Chess } from "chess.js";
+import initStockfish from "stockfish.wasm";
+
+
+async function countBlunders(pgn, playerColor) {
+  const sf = await initStockfish();
+  const chess = new Chess();
+  chess.loadPgn(pgn);
+
+  let blunders = 0;
+  const moves = chess.history();
+
+  for (let i = 0; i < moves.length; i++) {
+    // Determine whose move this is
+    const moveNumber = i + 1;
+    const isWhitesMove = moveNumber % 2 === 1;
+
+    // Skip opponent’s moves
+    if ((playerColor === "white" && !isWhitesMove) ||
+        (playerColor === "black" && isWhitesMove)) {
+      chess.move(moves[i]); // still update board
+      continue;
+    }
+
+    // Get FEN before and after the move
+    chess.undo();
+    const fenBefore = chess.fen();
+    chess.move(moves[i]);
+    const fenAfter = chess.fen();
+
+    const evalBefore = await evaluateFEN(sf, fenBefore);
+    const evalAfter = await evaluateFEN(sf, fenAfter);
+
+    // For White: drop means evalAfter < evalBefore
+    // For Black: drop means evalAfter > evalBefore (evals are from White’s perspective)
+    const delta = playerColor === "white"
+      ? evalAfter - evalBefore
+      : evalBefore - evalAfter;
+
+    if (delta < -500) blunders++;
+  }
+
+  return blunders;
+}
+
+async function evaluateFEN(sf, fen) {
+  return new Promise((resolve) => {
+    sf.postMessage(`position fen ${fen}`);
+    sf.postMessage("go depth 8"); // lower depth for speed
+
+    sf.onmessage = (event) => {
+      const line = event.data;
+      if (line.startsWith("info depth")) {
+        const match = line.match(/score cp (-?\d+)/);
+        if (match) resolve(parseInt(match[1]));
+      } else if (line.includes("mate")) {
+        resolve(10000); // treat mates as large evals
+      }
+    };
+  });
+}
+
 export function showLoading(isLoading) {
   const load = document.getElementById('loading');
   const stat = document.getElementById('stats');
@@ -11,7 +73,7 @@ export function showLoading(isLoading) {
 
 export function calculateStats(games) {
   const num_games = games.length;
-  let wins = 0, draws = 0, losses = 0, timeouts = 0, abandoned=0;
+  let wins = 0, draws = 0, losses = 0, timeouts = 0, abandoned=0, tot_blunders=0;
   let opp_resigned = 0, opp_checkmated = 0, opp_timeout = 0, opp_abandoned=0;
   let resigned = 0, checkmated = 0;
   if (num_games === 0) return null;
@@ -44,6 +106,8 @@ export function calculateStats(games) {
         if (game.kris_result === "timeout") timeouts++;
         if (game.kris_result === "abandoned") abandoned++;
     }
+  const blunders = countBlunders(game.pgn_results, game.kris_color);
+    tot_blunders+=blunders;
   });
   const win_rate = ((wins / num_games) * 100).toFixed(2);
   return {
@@ -60,13 +124,15 @@ export function calculateStats(games) {
     resigned,
     checkmated,
     win_rate,
-    elo_change
+    elo_change,
+    tot_blunders
   };
 }
 
 export function renderStats(stats, month_name, username) {
   if (!stats) return;
 
+  console.log("blunders:", stats.tot_blunders);
   const oppDetails = [
     stats.opp_resigned > 0 ? `${stats.opp_resigned} resignations` : null,
     stats.opp_checkmated > 0 ? `${stats.opp_checkmated} checkmates` : null,

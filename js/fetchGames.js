@@ -77,7 +77,7 @@ export function normaliseGame(raw, username) {
     kris_result: krisSide.result,
     opp_result: oppSide.result,
     opening: openingName,
-    pgn: raw.pgn || null,
+    pgn_results: raw.pgn || null,
   };
 }
 
