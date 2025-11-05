@@ -7,7 +7,9 @@ async function countBlunders(pgn, playerColor) {
   chess.loadPgn(pgn, { strict: false });
 
   let blunders = 0;
-  const moves = chess.history();
+  const moves = chess.history({ verbose: true });
+
+  let fenBefore = chess.fen()
 
   for (let i = 0; i < moves.length; i++) {
     // Determine whose move this is
@@ -18,19 +20,12 @@ async function countBlunders(pgn, playerColor) {
     if ((playerColor === "white" && !isWhitesMove) ||
         (playerColor === "black" && isWhitesMove)) {
       chess.move(moves[i]); // still update board
+      fenBefore = chess.fen();
       continue;
     }
 
-    // Get FEN before and after the move
-    chess.undo();
-    const fenBefore = chess.fen();
-
-    const result = chess.move(moves[i]);
-    if (!result) {
-    console.warn("Skipped invalid move:", moves[i]);
-    continue;
-    }
     const fenAfter = chess.fen();
+    chess.move(moves[i]);
 
     const evalBefore = await evaluateFEN(sf, fenBefore);
     const evalAfter = await evaluateFEN(sf, fenAfter);
