@@ -1,9 +1,8 @@
 import { Chess } from "chess.js";
-import initStockfish from "stockfish.wasm";
 
 
 async function countBlunders(pgn, playerColor) {
-  const sf = await initStockfish();
+  const sf = new Worker("https://cdn.jsdelivr.net/npm/stockfish@latest/stockfish.js");
   const chess = new Chess();
   chess.loadPgn(pgn);
 
@@ -39,24 +38,39 @@ async function countBlunders(pgn, playerColor) {
 
     if (delta < -500) blunders++;
   }
-
+  sf.terminate();
   return blunders;
 }
 
 async function evaluateFEN(sf, fen) {
   return new Promise((resolve) => {
-    sf.postMessage(`position fen ${fen}`);
-    sf.postMessage("go depth 8"); // lower depth for speed
+    let bestEval = null;
 
     sf.onmessage = (event) => {
       const line = event.data;
-      if (line.startsWith("info depth")) {
-        const match = line.match(/score cp (-?\d+)/);
-        if (match) resolve(parseInt(match[1]));
-      } else if (line.includes("mate")) {
-        resolve(10000); // treat mates as large evals
+      if (typeof line !== "string") return;
+
+      // Centipawn evaluation
+      const cpMatch = line.match(/score cp (-?\d+)/);
+      if (cpMatch) {
+        bestEval = parseInt(cpMatch[1]);
+      }
+
+      // Mate in N moves
+      const mateMatch = line.match(/score mate (-?\d+)/);
+      if (mateMatch) {
+        // If it's a mate, treat it as a large eval
+        bestEval = parseInt(mateMatch[1]) > 0 ? 10000 : -10000;
+      }
+
+      // Once engine reports bestmove, we resolve
+      if (line.startsWith("bestmove")) {
+        resolve(bestEval !== null ? bestEval : 0);
       }
     };
+
+    sf.postMessage(`position fen ${fen}`);
+    sf.postMessage("go depth 8");
   });
 }
 
@@ -71,10 +85,10 @@ export function showLoading(isLoading) {
   }
 }
 
-export function calculateStats(games) {
+export async function calculateStats(games) {
   const num_games = games.length;
-  let wins = 0, draws = 0, losses = 0, timeouts = 0, abandoned=0, tot_blunders=0;
-  let opp_resigned = 0, opp_checkmated = 0, opp_timeout = 0, opp_abandoned=0;
+  let wins = 0, draws = 0, losses = 0, timeouts = 0, abandoned = 0, tot_blunders = 0;
+  let opp_resigned = 0, opp_checkmated = 0, opp_timeout = 0, opp_abandoned = 0;
   let resigned = 0, checkmated = 0;
   if (num_games === 0) return null;
   const firstRating = games[0].kris_rating;
@@ -95,20 +109,20 @@ export function calculateStats(games) {
       draws++;
     } else if (game.kris_result === "insufficient") {
       draws++;
-    }
-    else if (game.kris_result === "timevsinsufficient") {
+    } else if (game.kris_result === "timevsinsufficient") {
       draws++;
+    } else if (game.opp_result === "win") {
+      losses++;
+      if (game.kris_result === "resigned") resigned++;
+      if (game.kris_result === "checkmated") checkmated++;
+      if (game.kris_result === "timeout") timeouts++;
+      if (game.kris_result === "abandoned") abandoned++;
     }
-    else if (game.opp_result === "win") {
-        losses++;
-        if (game.kris_result === "resigned") resigned++;
-        if (game.kris_result === "checkmated") checkmated++;
-        if (game.kris_result === "timeout") timeouts++;
-        if (game.kris_result === "abandoned") abandoned++;
-    }
-  const blunders = countBlunders(game.pgn_results, game.kris_color);
-    tot_blunders+=blunders;
   });
+  for (const game of games) {
+    const blunders = await countBlunders(game.pgn_results, game.kris_color);
+    tot_blunders += blunders;
+  }
   const win_rate = ((wins / num_games) * 100).toFixed(2);
   return {
     num_games,
