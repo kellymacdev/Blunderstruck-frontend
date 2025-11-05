@@ -12,32 +12,36 @@ async function countBlunders(pgn, playerColor) {
   let fenBefore = chess.fen()
 
   for (let i = 0; i < moves.length; i++) {
-    // Determine whose move this is
-    const moveNumber = i + 1;
-    const isWhitesMove = moveNumber % 2 === 1;
+  const move = moves[i];
 
-    // Skip opponent’s moves
-    if ((playerColor === "white" && !isWhitesMove) ||
-        (playerColor === "black" && isWhitesMove)) {
-      chess.move(moves[i]); // still update board
-      fenBefore = chess.fen();
-      continue;
-    }
-
-    const fenAfter = chess.fen();
-    chess.move(moves[i]);
-
-    const evalBefore = await evaluateFEN(sf, fenBefore);
-    const evalAfter = await evaluateFEN(sf, fenAfter);
-
-    // For White: drop means evalAfter < evalBefore
-    // For Black: drop means evalAfter > evalBefore (evals are from White’s perspective)
-    const delta = playerColor === "white"
-      ? evalAfter - evalBefore
-      : evalBefore - evalAfter;
-
-    if (delta < -500) blunders++;
+  // skip opponent moves
+  if (move.color !== playerColor[0]) {
+    chess.move({ from: move.from, to: move.to, promotion: move.promotion });
+    fenBefore = chess.fen();
+    continue;
   }
+
+  // evaluate player move
+  const fenAfter = chess.fen();
+
+  // make the move correctly
+  const result = chess.move({ from: move.from, to: move.to, promotion: move.promotion });
+  if (!result) {
+    console.warn("Skipped invalid move:", move);
+    continue;
+  }
+
+  const evalBefore = await evaluateFEN(sf, fenBefore);
+  const evalAfter = await evaluateFEN(sf, fenAfter);
+
+  const delta = playerColor === "white"
+    ? evalAfter - evalBefore
+    : evalBefore - evalAfter;
+
+  if (delta < -500) blunders++;
+
+  fenBefore = chess.fen();
+}
   sf.terminate();
   return blunders;
 }
