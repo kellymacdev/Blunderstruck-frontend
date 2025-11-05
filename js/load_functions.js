@@ -24,7 +24,12 @@ async function countBlunders(pgn, playerColor) {
     // Get FEN before and after the move
     chess.undo();
     const fenBefore = chess.fen();
-    chess.move(moves[i]);
+
+    const result = chess.move(moves[i]);
+    if (!result) {
+    console.warn("Skipped invalid move:", moves[i]);
+    continue;
+    }
     const fenAfter = chess.fen();
 
     const evalBefore = await evaluateFEN(sf, fenBefore);
