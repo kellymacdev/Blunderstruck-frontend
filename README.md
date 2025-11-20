@@ -3,8 +3,8 @@
 **Blunderstruck** is a web app that visualizes a Chess.com player’s monthly performance.  
 Enter any username to see rating trends, opening stats, and game results — all rendered dynamically with interactive charts.
 
-🔗 **Live App:** [kellymacdev.github.io/blunderstruck](https://kellymacdev.github.io/blunderstruck)  
-🖥️ **Backend API:** [blunderstruck.onrender.com](https://blunderstruck.onrender.com)
+**Live App:** [kellymacdev.github.io/blunderstruck](https://kellymacdev.github.io/blunderstruck)  
+**Backend API:** [blunderstruck.onrender.com](https://blunderstruck.onrender.com)
 
 <img width="2824" height="1526" alt="image" src="https://github.com/user-attachments/assets/a53651d9-a6e8-474c-b42e-bd063d5243c1" />
 
@@ -16,16 +16,16 @@ Enter any username to see rating trends, opening stats, and game results — all
 - Displays rating evolution and opening frequency
 - Interactive charts built with Chart.js
 - Smooth Django + vanilla JS integration
-- Deployed frontend on **GitHub Pages**
-- Backend API hosted on **Render**
+- Deployed frontend on GitHub Pages
+- Backend API hosted on Render
 
 ---
 
 ## How It Works
 
-1. The **frontend** (HTML + JS) is served from GitHub Pages.  
+1. The frontend (HTML + JS) is served from GitHub Pages.  
 2. When a user enters a Chess.com username, the app sends a request to the Django backend on Render.  
-3. The **Django API** fetches monthly game data from the official [Chess.com API](https://www.chess.com/news/view/published-data-api), processes it, and returns it to the frontend.  
+3. The Django API fetches monthly game data from the official [Chess.com API](https://www.chess.com/news/view/published-data-api), processes it, and returns it to the frontend.  
 4. The frontend displays statistics and visualizations including:
    - Total games played
    - Win/loss/draw breakdown
